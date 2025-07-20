@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .quiz-container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 24px;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .answers button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 12px;
+            border: none;
+            background: #eee;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s;
+            font-size: 16px;
+        }
+
+        .answers button.correct {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .answers button.wrong {
+            background: #f44336;
+            color: white;
+        }
+
+        .score {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #next-btn {
+            margin-top: 20px;
+            display: none;
+            padding: 12px 20px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        @media (max-width: 480px) {
+            .quiz-container {
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            .answers button,
+            #next-btn {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .score {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="quiz-container">
+        <h2>JavaScript Quiz</h2>
+        <div class="question" id="question"></div>
+        <div class="answers" id="answers"></div>
+        <button id="next-btn">Next</button>
+        <div class="score" id="score"></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "What does HTML stand for?",
+                answers: [
+                    { text: "HyperText Markup Language", correct: true },
+                    { text: "Hyper Trainer Marking Language", correct: false },
+                    { text: "HyperText Markdown Language", correct: false },
+                    { text: "None of the above", correct: false }
+                ]
+            },
+            {
+                question: "Which company developed JavaScript?",
+                answers: [
+                    { text: "Mozilla", correct: false },
+                    { text: "Netscape", correct: true },
+                    { text: "Google", correct: false },
+                    { text: "Microsoft", correct: false }
+                ]
+            },
+            {
+                question: "Which symbol is used for comments in JavaScript?",
+                answers: [
+                    { text: "//", correct: true },
+                    { text: "<!-- -->", correct: false },
+                    { text: "#", correct: false },
+                    { text: "/* */", correct: false }
+                ]
+            }
+        ];
+
+        const questionEl = document.getElementById("question");
+        const answersEl = document.getElementById("answers");
+        const nextBtn = document.getElementById("next-btn");
+        const scoreEl = document.getElementById("score");
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function showQuestion() {
+            resetState();
+            const currentQuestion = questions[currentQuestionIndex];
+            questionEl.textContent = currentQuestion.question;
+            currentQuestion.answers.forEach(answer => {
+                const button = document.createElement("button");
+                button.textContent = answer.text;
+                button.classList.add("btn");
+                button.addEventListener("click", () => selectAnswer(button, answer.correct));
+                answersEl.appendChild(button);
+            });
+        }
+
+        function resetState() {
+            nextBtn.style.display = "none";
+            answersEl.innerHTML = "";
+        }
+
+        function selectAnswer(button, isCorrect) {
+            Array.from(answersEl.children).forEach(btn => {
+                const correct = questions[currentQuestionIndex].answers.find(ans => ans.text === btn.textContent).correct;
+                btn.classList.add(correct ? "correct" : "wrong");
+                btn.disabled = true;
+            });
+            if (isCorrect) score++;
+            nextBtn.style.display = "inline-block";
+        }
+
+        function showScore() {
+            resetState();
+            questionEl.textContent = "Quiz Completed!";
+            scoreEl.textContent = `Your score is ${score} out of ${questions.length}`;
+            nextBtn.textContent = "Play Again";
+            nextBtn.style.display = "inline-block";
+        }
+
+        nextBtn.addEventListener("click", () => {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+            } else {
+                showScore();
+                nextBtn.addEventListener("click", () => location.reload());
+            }
+        });
+
+        showQuestion();
+    </script>
+</body>
+
+</html>
